@@ -19,6 +19,7 @@
     "hardhat-deploy": "^0.7.0-beta.39"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.3.3",
     "dotenv": "^8.2.0"
   }
 }
