@@ -17,7 +17,7 @@ describe("TokenCreator contract", function () {
     await expect(await tokenCreator.owner()).to.equal(deployer.address);
   });
 
-  it("creates SimpleToken for Wallet and assigns balance", async function () {
+  it("Emits event CreatedSimpleToken", async function () {
     await expect(
       await tokenCreator
         .connect(wallet)
@@ -25,15 +25,24 @@ describe("TokenCreator contract", function () {
     )
       .to.emit(tokenCreator, "CreatedSimpleToken")
       .withArgs(
-        await tokenCreator.child(),
+        (
+          await tokenCreator.getTokensOfOwner(wallet.address)
+        )[0].tokenAddress,
         wallet.address,
         initialSupply,
         name,
         symbol
       );
+  });
+
+  it("Assigns correct balance", async function () {
+    await tokenCreator
+      .connect(wallet)
+      .createSimpleToken(initialSupply, name, symbol);
+    const token = (await tokenCreator.getTokensOfOwner(wallet.address))[0];
     const simpleToken = await ethers.getContractAt(
       "SimpleToken",
-      await tokenCreator.child()
+      token.tokenAddress
     );
     await expect(await simpleToken.balanceOf(deployer.address)).to.equal(0);
     await expect(await simpleToken.balanceOf(wallet.address)).to.equal(
