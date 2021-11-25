@@ -1,12 +1,16 @@
 require("@nomiclabs/hardhat-waffle");
 require("dotenv").config({ path: ".env" });
+require("hardhat-gas-reporter");
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
   defaultNetwork: "hardhat",
-
+  gasReporter: {
+    enabled: process.env.REPORT_GAS ? true : false,
+    coinmarketcap: process.env.COINMARKETCAP_KEY,
+  },
   networks: {
     hardhat: {},
     ganache: {

@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.3.3",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "hardhat-gas-reporter": "^1.0.4"
   }
 }
