@@ -66,6 +66,9 @@ export default {
     drawer: false,
     group: null,
   }),
+  /**
+   * Initializes the store to connect with Wallets and fetch data.
+   */
   created() {
     this.$store.dispatch("accounts/initWeb3Modal");
     this.$store.dispatch("accounts/initListener");

@@ -42,6 +42,9 @@ const getters = {
 };
 
 const actions = {
+  /**
+   * Loads Accounts data when wallet is connected and initializes TokenCreator
+   */
   async initWeb3Modal({ commit, dispatch }) {
     const providerOptions = {
       // MetaMask is enabled by default
@@ -106,11 +109,10 @@ const actions = {
       dispatch("fetchActiveData");
     });
   },
-
-  async initChildren({ rootState }) {
-    rootState.tokenCreator.fetchTokens();
-  },
-
+  /**
+   * Fetches Tokens and Balances of an account.
+   * Used when account or chain changed.
+   */
   async fetchActiveData({ dispatch }) {
     dispatch("tokenCreator/fetchTokens", {}, { root: true });
     dispatch("fetchActiveBalance");
