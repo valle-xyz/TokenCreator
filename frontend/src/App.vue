@@ -17,6 +17,11 @@
       :permanent="!$vuetify.breakpoint.sm && !$vuetify.breakpoint.xs"
       v-model="drawer"
     >
+      <template v-slot:prepend>
+        <div class="pa-5">
+          <wallet-button />
+        </div>
+      </template>
       <v-list nav dense>
         <v-list-item-group
           v-model="group"
@@ -54,10 +59,11 @@
 </template>
 
 <script>
+import WalletButton from "./components/WalletButton.vue";
 export default {
   name: "App",
 
-  components: {},
+  components: { WalletButton },
   data: () => ({
     drawer: false,
     group: null,
@@ -70,3 +76,10 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.web3modal-modal-lightbox {
+  z-index: 99;
+  font-family: "Roboto", sans-serif;
+}
+</style>
