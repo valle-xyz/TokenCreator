@@ -5,8 +5,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./factories/SimpleToken.sol";
 
 struct Token {
-    string name;
-    bytes32 factory;
+    string tokenName;
+    string tokenSymbol;
+    uint256 tokenInitialSupply;
+    string tokenType;
     address tokenAddress;
 }
 
@@ -42,7 +44,13 @@ contract TokenCreator is Ownable {
             symbol
         );
         tokensOfOwner[msg.sender].push(
-            Token(name, "SimpleToken", address(simpleToken))
+            Token(
+                name,
+                symbol,
+                initialSupply,
+                "SimpleToken",
+                address(simpleToken)
+            )
         );
         emit CreatedSimpleToken(
             simpleToken,

@@ -1,29 +1,45 @@
 <template>
   <div>
-    <h1>Your Tokens</h1>
+    <h1>Create Token</h1>
 
-    <v-btn to="/create-token">Create Token</v-btn>
+    <v-card>
+      <v-card-title>Token Data</v-card-title>
+      <v-card-subtitle class="pb-0">Can not be changed later.</v-card-subtitle>
+      <v-card-text>
+        <v-form>
+          <v-container>
+            <v-row>
+              <v-col cols="12" md="12">
+                <v-text-field
+                  v-model="name"
+                  label="Name"
+                  required
+                ></v-text-field>
+              </v-col>
 
-    <v-simple-table>
-      <template v-slot:default>
-        <thead>
-          <tr>
-            <th class="text-left">Name</th>
-            <th class="text-left">Symbol</th>
-            <th class="text-left">Type</th>
-            <th class="text-left">Supply</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="token in getTokens" :key="token.name">
-            <td>{{ token.name }}</td>
-            <td>{{ token.symbol }}</td>
-            <td>{{ token.type }}</td>
-            <td>{{ token.initialSupply }}</td>
-          </tr>
-        </tbody>
-      </template>
-    </v-simple-table>
+              <v-col cols="12" md="12">
+                <v-text-field
+                  v-model="symbol"
+                  label="Symbol"
+                  required
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="12">
+                <v-text-field
+                  v-model="initialSupply"
+                  label="Initial Supply"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
+        <v-card-actions>
+          <v-btn @click="createToken">Create Token</v-btn>
+        </v-card-actions>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -32,7 +48,7 @@ import { ethers } from "ethers";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "Main",
+  name: "CreateToken",
   computed: {
     ...mapGetters("accounts", ["getActiveAccount", "getProviderEthers"]),
     ...mapGetters("tokenCreator", [
@@ -76,13 +92,18 @@ export default {
   },
   data() {
     return {
-      newValue: null,
-      tokenCreator: null,
+      name: "",
+      symbol: "",
+      initialSupply: 1000000000,
     };
   },
   methods: {
-    async onSubmit() {
-      await this.tokenCreator.setNum(this.newValue);
+    async createToken() {
+      await this.tokenCreator.createSimpleToken(
+        this.initialSupply,
+        this.name,
+        this.symbol
+      );
     },
   },
 };

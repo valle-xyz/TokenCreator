@@ -3,6 +3,7 @@ import Router from "vue-router";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
+import CreateToken from "./pages/CreateToken";
 import SetValue from "./pages/SetValue";
 
 Vue.use(Router);
@@ -22,6 +23,11 @@ export default new Router({
       path: "/dashboard",
       name: "dashboard",
       component: Dashboard,
+    },
+    {
+      path: "/create-token",
+      name: "create-token",
+      component: CreateToken,
     },
     {
       path: "/set-value",

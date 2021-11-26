@@ -23,6 +23,7 @@ const getters = {
 const actions = {
   async fetchTokens({ commit, rootState }) {
     let provider = rootState.accounts.providerEthers;
+    let account = rootState.accounts.activeAccount;
     let chainIdDec = parseInt(rootState.accounts.chainId);
     let tokenCreatorAddress = addresses.TokenCreator[chainIdDec];
 
@@ -32,9 +33,14 @@ const actions = {
       provider
     );
 
-    let tokens = await contract.getTokensOfOwner(
-      rootState.accounts.getters["getActiveAccount"]
-    );
+    let tokensRaw = await contract.getTokensOfOwner(account);
+    let tokens = tokensRaw.map((raw) => ({
+      name: raw[0],
+      symbol: raw[1],
+      initialSupply: raw[2],
+      type: raw[3],
+      address: raw[4],
+    }));
 
     commit("setTokens", tokens);
   },
@@ -51,7 +57,7 @@ const actions = {
 
 const mutations = {
   setTokens(state, _tokens) {
-    state.num = _tokens;
+    state.tokens = _tokens;
   },
   setTokenCreatorAbi(state, abi) {
     state.tokenCreatorAbi = abi;
