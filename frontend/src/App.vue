@@ -22,25 +22,23 @@
           <wallet-button />
         </div>
       </template>
-      <v-list nav dense>
+      <v-list nav>
         <v-list-item-group
           v-model="group"
           active-class="deep-purple--text text--accent-4"
         >
-          <v-list-item>
-            <v-list-item-title>Foo</v-list-item-title>
+          <v-list-item to="/">
+            <v-list-item-icon>
+              <v-icon>mdi-home</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
 
-          <v-list-item>
-            <v-list-item-title>Bar</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Fizz</v-list-item-title>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>Buzz</v-list-item-title>
+          <v-list-item to="/profile">
+            <v-list-item-icon>
+              <v-icon>mdi-account-circle</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Profile</v-list-item-title>
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -76,10 +74,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-.web3modal-modal-lightbox {
-  z-index: 99;
-  font-family: "Roboto", sans-serif;
-}
-</style>
