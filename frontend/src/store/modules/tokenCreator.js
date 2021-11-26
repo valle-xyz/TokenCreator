@@ -1,11 +1,14 @@
 import { ethers } from "ethers";
 import TokenCreator from "../../contracts/TokenCreator.json";
 import addresses from "../../contracts/addresses.json";
+import Vue from "vue";
 
 const state = {
   tokens: [],
   tokenCreatorAbi: null,
   tokenCreatorAddress: null,
+  tokenCreator: null,
+  listener: null,
 };
 
 const getters = {
@@ -21,19 +24,26 @@ const getters = {
 };
 
 const actions = {
-  async fetchTokens({ commit, rootState }) {
+  async init({ commit, dispatch, rootState }) {
     let provider = rootState.accounts.providerEthers;
-    let account = rootState.accounts.activeAccount;
     let chainIdDec = parseInt(rootState.accounts.chainId);
     let tokenCreatorAddress = addresses.TokenCreator[chainIdDec];
 
-    let contract = new ethers.Contract(
+    let tokenCreator = new ethers.Contract(
       tokenCreatorAddress,
       TokenCreator.abi,
       provider
     );
-
-    let tokensRaw = await contract.getTokensOfOwner(account);
+    commit("setTokenCreatorAbi", TokenCreator.abi);
+    commit("setTokenCreatorAddress", tokenCreatorAddress);
+    commit("setTokenCreator", tokenCreator);
+    dispatch("fetchTokens");
+    dispatch("initListener");
+  },
+  async fetchTokens({ commit, rootState, state }) {
+    if (state.tokenCreator == null) return;
+    let account = rootState.accounts.activeAccount;
+    let tokensRaw = await state.tokenCreator.getTokensOfOwner(account);
     let tokens = tokensRaw.map((raw) => ({
       name: raw[0],
       symbol: raw[1],
@@ -44,14 +54,19 @@ const actions = {
 
     commit("setTokens", tokens);
   },
-  storeTokenCreatorAbi({ commit }) {
-    commit("setTokenCreatorAbi", TokenCreator.abi);
-  },
-  storeTokenCreatorAddress({ commit, rootState }) {
-    let chainIdDec = parseInt(rootState.accounts.chainId);
-    let tokenCreatorAddress = addresses.TokenCreator[chainIdDec];
-
-    commit("setTokenCreatorAddress", tokenCreatorAddress);
+  async initListener() {
+    state.listener = state.tokenCreator.on(
+      "CreatedSimpleToken",
+      (_from, value) => {
+        // show a toast
+        Vue.toasted.show("New Token Created " + value, {
+          type: "success",
+          duration: 5000,
+          theme: "bubble",
+          position: "top-center",
+        });
+      }
+    );
   },
 };
 
@@ -64,6 +79,9 @@ const mutations = {
   },
   setTokenCreatorAddress(state, address) {
     state.tokenCreatorAddress = address;
+  },
+  setTokenCreator(state, tokenCreator) {
+    state.tokenCreator = tokenCreator;
   },
 };
 

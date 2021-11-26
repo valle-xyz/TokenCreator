@@ -74,8 +74,7 @@ const actions = {
     }
 
     commit("setWeb3ModalInstance", w3mObject);
-    dispatch("tokenCreator/storeTokenCreatorAbi", {}, { root: true });
-    dispatch("tokenCreator/storeTokenCreatorAddress", {}, { root: true });
+    dispatch("tokenCreator/init", {}, { root: true });
   },
 
   async connectWeb3Modal({ commit }) {
@@ -92,7 +91,7 @@ const actions = {
     commit("setIsConnected", false);
   },
 
-  async ethereumListener({ commit, dispatch }) {
+  async initListener({ commit, dispatch }) {
     window.ethereum.on("accountsChanged", (accounts) => {
       if (state.isConnected) {
         commit("setActiveAccount", accounts[0]);

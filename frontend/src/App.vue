@@ -68,7 +68,7 @@ export default {
   }),
   created() {
     this.$store.dispatch("accounts/initWeb3Modal");
-    this.$store.dispatch("accounts/ethereumListener");
+    this.$store.dispatch("accounts/initListener");
   },
   watch: {
     group() {
