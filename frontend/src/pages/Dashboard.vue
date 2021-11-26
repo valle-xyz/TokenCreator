@@ -42,9 +42,9 @@ export default {
     ]),
   },
   created() {
-    this.$store.dispatch("tokenCreator/fetchTokens");
-    this.$store.dispatch("tokenCreator/storeTokenCreatorAbi");
-    this.$store.dispatch("tokenCreator/storeTokenCreatorAddress");
+    // this.$store.dispatch("tokenCreator/fetchTokens");
+    // this.$store.dispatch("tokenCreator/storeTokenCreatorAbi");
+    // this.$store.dispatch("tokenCreator/storeTokenCreatorAddress");
 
     // if web3 provider has not been yet loaded, redirect to root
     if (!this.getProviderEthers) {
@@ -76,14 +76,8 @@ export default {
   },
   data() {
     return {
-      newValue: null,
       tokenCreator: null,
     };
-  },
-  methods: {
-    async onSubmit() {
-      await this.tokenCreator.setNum(this.newValue);
-    },
   },
 };
 </script>

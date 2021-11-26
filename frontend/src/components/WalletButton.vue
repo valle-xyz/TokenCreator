@@ -31,10 +31,6 @@ export default {
       "getWeb3Modal",
     ]),
   },
-  created() {
-    this.$store.dispatch("accounts/initWeb3Modal");
-    this.$store.dispatch("accounts/ethereumListener");
-  },
   methods: {
     ...mapActions("accounts", ["connectWeb3Modal", "disconnectWeb3Modal"]),
   },

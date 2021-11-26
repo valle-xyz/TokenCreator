@@ -42,7 +42,7 @@ const getters = {
 };
 
 const actions = {
-  async initWeb3Modal({ commit }) {
+  async initWeb3Modal({ commit, dispatch }) {
     const providerOptions = {
       // MetaMask is enabled by default
       // Find other providers here: https://github.com/Web3Modal/web3modal/tree/master/docs/providers
@@ -70,10 +70,12 @@ const actions = {
       commit("setActiveAccount", window.ethereum.selectedAddress);
       commit("setChainData", window.ethereum.chainId);
       commit("setEthersProvider", providerW3m);
-      actions.fetchActiveBalance({ commit });
+      dispatch("fetchActiveData");
     }
 
     commit("setWeb3ModalInstance", w3mObject);
+    dispatch("tokenCreator/storeTokenCreatorAbi", {}, { root: true });
+    dispatch("tokenCreator/storeTokenCreatorAddress", {}, { root: true });
   },
 
   async connectWeb3Modal({ commit }) {
@@ -83,7 +85,6 @@ const actions = {
     commit("setActiveAccount", window.ethereum.selectedAddress);
     commit("setChainData", window.ethereum.chainId);
     commit("setEthersProvider", providerW3m);
-    actions.fetchActiveBalance({ commit });
   },
 
   async disconnectWeb3Modal({ commit }) {
@@ -91,20 +92,29 @@ const actions = {
     commit("setIsConnected", false);
   },
 
-  async ethereumListener({ commit }) {
+  async ethereumListener({ commit, dispatch }) {
     window.ethereum.on("accountsChanged", (accounts) => {
       if (state.isConnected) {
         commit("setActiveAccount", accounts[0]);
         commit("setEthersProvider", state.providerW3m);
-        actions.fetchActiveBalance({ commit });
+        dispatch("fetchActiveData");
       }
     });
 
     window.ethereum.on("chainChanged", (chainId) => {
       commit("setChainData", chainId);
       commit("setEthersProvider", state.providerW3m);
-      actions.fetchActiveBalance({ commit });
+      dispatch("fetchActiveData");
     });
+  },
+
+  async initChildren({ rootState }) {
+    rootState.tokenCreator.fetchTokens();
+  },
+
+  async fetchActiveData({ dispatch }) {
+    dispatch("tokenCreator/fetchTokens", {}, { root: true });
+    dispatch("fetchActiveBalance");
   },
 
   async fetchActiveBalance({ commit }) {
