@@ -34,6 +34,20 @@
             <v-list-item-title>Home</v-list-item-title>
           </v-list-item>
 
+          <v-list-item to="/set-value">
+            <v-list-item-icon>
+              <v-icon>mdi-redhat</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Set Value</v-list-item-title>
+          </v-list-item>
+
+          <v-list-item to="/dashboard">
+            <v-list-item-icon>
+              <v-icon>mdi-view-dashboard</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Dashboard</v-list-item-title>
+          </v-list-item>
+
           <v-list-item to="/profile">
             <v-list-item-icon>
               <v-icon>mdi-account-circle</v-icon>

@@ -160,6 +160,9 @@ const mutations = {
       case "0xaef3":
         state.chainName = "Alfajores Testnet";
         break;
+      case "0x7a69":
+        state.chainName = "Hardhat Localhost";
+        break;
       case "0x539": // 1337 (often used on localhost)
       case "0x1691": // 5777 (default in Ganache)
       default:
