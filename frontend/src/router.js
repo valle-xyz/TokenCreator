@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Profile from "./pages/Profile";
+import CreateToken from "./pages/CreateToken";
 import Dashboard from "./pages/Dashboard";
 
 Vue.use(Router);
@@ -15,6 +16,11 @@ export default new Router({
       path: "/",
       name: "home",
       component: Dashboard,
+    },
+    {
+      path: "/create-token",
+      name: "createToken",
+      component: CreateToken,
     },
     {
       path: "/profile",
