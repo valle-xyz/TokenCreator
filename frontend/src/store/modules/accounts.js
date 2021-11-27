@@ -74,24 +74,26 @@ const actions = {
       commit("setChainData", window.ethereum.chainId);
       commit("setEthersProvider", providerW3m);
       dispatch("fetchActiveData");
+      dispatch("tokenCreator/init", {}, { root: true });
     }
 
     commit("setWeb3ModalInstance", w3mObject);
-    dispatch("tokenCreator/init", {}, { root: true });
   },
 
-  async connectWeb3Modal({ commit }) {
+  async connectWeb3Modal({ commit, dispatch }) {
     let providerW3m = await state.web3Modal.connect();
     commit("setIsConnected", true);
 
     commit("setActiveAccount", window.ethereum.selectedAddress);
     commit("setChainData", window.ethereum.chainId);
     commit("setEthersProvider", providerW3m);
+    dispatch("tokenCreator/init", {}, { root: true });
   },
 
-  async disconnectWeb3Modal({ commit }) {
+  async disconnectWeb3Modal({ commit, dispatch }) {
     commit("disconnectWallet");
     commit("setIsConnected", false);
+    dispatch("tokenCreator/clear", {}, { root: true });
   },
 
   async initListener({ commit, dispatch }) {
@@ -99,6 +101,7 @@ const actions = {
       if (state.isConnected) {
         commit("setActiveAccount", accounts[0]);
         commit("setEthersProvider", state.providerW3m);
+        dispatch("tokenCreator/init", {}, { root: true });
         dispatch("fetchActiveData");
       }
     });
@@ -106,6 +109,7 @@ const actions = {
     window.ethereum.on("chainChanged", (chainId) => {
       commit("setChainData", chainId);
       commit("setEthersProvider", state.providerW3m);
+      dispatch("tokenCreator/init", {}, { root: true });
       dispatch("fetchActiveData");
     });
   },
@@ -134,8 +138,6 @@ const mutations = {
     }
     state.providerW3m = null;
     await state.web3Modal.clearCachedProvider();
-
-    window.location.href = "../"; // redirect to the Main page
   },
 
   setActiveAccount(state, selectedAddress) {

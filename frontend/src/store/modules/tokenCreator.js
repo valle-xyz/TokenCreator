@@ -55,6 +55,7 @@ const actions = {
     commit("setTokens", tokens);
   },
   async initListener() {
+    if (state.listener != null) return;
     state.listener = state.tokenCreator.on(
       "CreatedSimpleToken",
       (_from, value) => {
@@ -67,6 +68,13 @@ const actions = {
         });
       }
     );
+  },
+  async clear({ commit }) {
+    if (state.listener != null) {
+      state.tokenCreator.removeListener("CreatedSimpleToken");
+      state.listener = null;
+    }
+    commit("setTokens", []);
   },
 };
 
