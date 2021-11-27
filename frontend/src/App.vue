@@ -23,10 +23,7 @@
         </div>
       </template>
       <v-list nav>
-        <v-list-item-group
-          v-model="group"
-          active-class="deep-purple--text text--accent-4"
-        >
+        <v-list-item-group v-model="group">
           <v-list-item to="/">
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
@@ -42,6 +39,27 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
+      <template v-slot:append>
+        <div class="pa-5">
+          <v-tooltip v-if="!$vuetify.theme.dark" bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn v-on="on" color="info" small fab @click="toggleDarkMode">
+                <v-icon class="mr-1">mdi-moon-waxing-crescent</v-icon>
+              </v-btn>
+            </template>
+            <span>Dark Mode</span>
+          </v-tooltip>
+
+          <v-tooltip v-else bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn v-on="on" color="info" small fab @click="toggleDarkMode">
+                <v-icon color="yellow">mdi-white-balance-sunny</v-icon>
+              </v-btn>
+            </template>
+            <span>Light Mode</span>
+          </v-tooltip>
+        </div>
+      </template>
     </v-navigation-drawer>
     <v-main>
       <v-container fluid>
@@ -65,7 +83,14 @@ export default {
   data: () => ({
     drawer: false,
     group: null,
+    darkMode: true,
   }),
+  methods: {
+    toggleDarkMode: function () {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+      this.darkMode = !this.darkMode;
+    },
+  },
   /**
    * Initializes the store to connect with Wallets and fetch data.
    */
