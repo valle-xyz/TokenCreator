@@ -1,66 +1,43 @@
-# Hardhat Vue.js Starter Template
+# Token Creator
 
+## Introduction
+
+The TokenCreater provides a frontend to seamlessly issue and manage tokens. 
+By this it enables **everyone**, indepent of technical skills, to create, mint,
+manage, monitor and destroy tokens. It abtracts the technical details away
+and offers a simple dashboard with easy to use forms.
+
+TokenCreator solidity functionalities to create new smart contracts with another
+smart contracts. Every user **owns** the smart contract of every token created by 
+her. TokenCreator offers one type of token right now, the *SimpleToken*. The 
+roadmap includes adding more tokens and finally allow users to experiment with
+different attributes and parametes. The ultimate goal is to foster financial
+inclusion by supporting community and complementary currencies.
+
+TokenCreater is still in the MVP-phase, tokens can be issued on different 
+testnets. TokenCreator is heavily inspired by [Celo's Make Crypto Mobile 
+Hackathon](https://mobiledefi.devpost.com/) and aims to be a recognized 
+submission and optimally gain funding for a short runway of a few weeks to test 
+the market hypothesis (i.e. test is demand for token creators is high enough
+for a business case).
+
+## Starter Kit
+
+Based on [Hardhat Vue.js Starter Template](https://github.com/remote-gildor/hardhat-web3-vue-starter).
 A starter template for Ethereum dApps that uses the following tools:
-
-- Hardhat
-- Waffle
-- ethers.js
-- Vue & Vuex
-- Web3Modal
-- Bootstrap 5
-- Vue Toasted
-- Vue Gravatar
-
-## Features
-
-### Seamless connect/disconnect wallet experience (using Web3Modal)
-
-Web3Modal is used to support various different Ethereum wallets. When user switches between accounts and even chains, the UI quickly notices that and adapts to the change (account and ETH balance data are refreshed).
-
-![](assets/web3modal.png)
-
-### Alert when not on mainnet
-
-If user's wallet is not set to Mainnet, an unobtrusive yellow alert band shows up just above the navigation bar. The alert notifies the user which (testnet) chain they are currently using.
-
-![](assets/chain-alert.png)
-
-### Storing contract addresses and ABIs on front-end
-
-The deploy.js script automatically stores all contract ABIs and their respective addresses in the /frontend/src/contracts folder.
-
-Addresses are separated from one another per contract name and also per chain ID.
-
-Example (`addresses.json`):
-
-```json
-{
-  "Token":{
-    "1337":"0x78afecb367f032d93eDf865Ada339AFf6ef2621b",
-    "3":"0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    "1":"0xE2Df865998BD3f20117e037d1293367f032d93F6"
-  },
-  "Farm":{
-    "1337":"0x1Cf865998BD3f20eB6BCdAda339aa8BD3f2e26eb",
-    "3":"0x998BD3f20eB6Bafecb3673f201ca17e037d10aa3",
-    "1":"0xBCdAda33b67815678afecb365998BD3f2e26BCdA"
-  }
-}
-```
-
-## npm install
+## install
 
 Run installations in both root and in the frontend folder:
 
 ```bash
-npm install
-cd frontend && npm install
+yarn
+cd frontend && yarn
 ```
 
 ## Run Vue app
 
 ```bash
-cd frontend && npm run serve
+cd frontend && yarn serve
 ```
 
 ## Tests
@@ -71,16 +48,18 @@ cd frontend && npm run serve
 npx hardhat test
 ```
 
-## Deployment to ganache
+## Deployment to Celo alfajores testnet
 
 ```bash
-npx hardhat run scripts/deploy.js --network ganache
+npx hardhat run scripts/deploy.js --network alfajores
 ```
 
-## Deployment to a remote blockchain
+## Deployment to local hardhat network
 
 ```bash
-npx hardhat run scripts/deploy.js --network goerli
+npx run node
+# open a new terminal and run:
+npx hardhat run scripts/deploy.js --network localhost
 ```
 
 ## Verify on Etherscan
