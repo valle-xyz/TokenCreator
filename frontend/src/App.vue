@@ -23,21 +23,25 @@
         </div>
       </template>
       <v-list nav>
-        <v-list-item-group v-model="group">
-          <v-list-item to="/">
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item>
+        <v-list-item to="/">
+          <v-list-item-icon>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Dashboard</v-list-item-title>
+        </v-list-item>
 
-          <v-list-item to="/profile">
-            <v-list-item-icon>
-              <v-icon>mdi-account-circle</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Profile</v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
+        <v-list-item to="/create-token">
+          <v-list-item-icon>
+            <v-icon>mdi-plus-circle-multiple</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Create Token</v-list-item-title>
+        </v-list-item>
+        <v-list-item to="/profile">
+          <v-list-item-icon>
+            <v-icon>mdi-account-circle</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Profile</v-list-item-title>
+        </v-list-item>
       </v-list>
       <template v-slot:append>
         <div class="pa-5">
@@ -82,7 +86,6 @@ export default {
   components: { WalletButton },
   data: () => ({
     drawer: false,
-    group: null,
     darkMode: true,
   }),
   methods: {
@@ -97,11 +100,6 @@ export default {
   created() {
     this.$store.dispatch("accounts/initWeb3Modal");
     this.$store.dispatch("accounts/initListener");
-  },
-  watch: {
-    group() {
-      this.drawer = false;
-    },
   },
 };
 </script>
