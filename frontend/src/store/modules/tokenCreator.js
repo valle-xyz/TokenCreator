@@ -31,14 +31,14 @@ const actions = {
   async init({ commit, dispatch, rootState }) {
     commit("setError", null);
     try {
-      const provider = rootState.accounts.provider;
+      const signer = rootState.accounts.signer;
       let chainIdDec = parseInt(rootState.accounts.network.chainId);
       let tokenCreatorAddress = addresses.TokenCreator[chainIdDec];
 
       let tokenCreator = new ethers.Contract(
         tokenCreatorAddress,
         TokenCreator.abi,
-        provider
+        signer
       );
       commit("setTokenCreatorAbi", TokenCreator.abi);
       commit("setTokenCreatorAddress", tokenCreatorAddress);

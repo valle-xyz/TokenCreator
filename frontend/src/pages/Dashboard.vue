@@ -30,7 +30,19 @@
               {{ token.symbol }}</v-card-title
             >
             <v-card-text>
-              {{ token.name }}
+              <p>
+                {{ token.name }}
+              </p>
+              <p>
+                <a
+                  target="blank"
+                  :href="
+                    'https://alfajores-blockscout.celo-testnet.org/address/' +
+                    token.address
+                  "
+                  >View Contract</a
+                >
+              </p>
             </v-card-text>
           </v-card>
         </v-col>
