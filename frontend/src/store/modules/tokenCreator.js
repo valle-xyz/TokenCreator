@@ -9,9 +9,13 @@ const state = {
   tokenCreatorAddress: null,
   tokenCreator: null,
   listener: null,
+  error: null,
 };
 
 const getters = {
+  getError(state) {
+    return state.error;
+  },
   getTokens(state) {
     return state.tokens;
   },
@@ -25,20 +29,25 @@ const getters = {
 
 const actions = {
   async init({ commit, dispatch, rootState }) {
-    let provider = rootState.accounts.providerEthers;
-    let chainIdDec = parseInt(rootState.accounts.chainId);
-    let tokenCreatorAddress = addresses.TokenCreator[chainIdDec];
+    commit("setError", null);
+    try {
+      const provider = rootState.accounts.provider;
+      let chainIdDec = parseInt(rootState.accounts.network.chainId);
+      let tokenCreatorAddress = addresses.TokenCreator[chainIdDec];
 
-    let tokenCreator = new ethers.Contract(
-      tokenCreatorAddress,
-      TokenCreator.abi,
-      provider
-    );
-    commit("setTokenCreatorAbi", TokenCreator.abi);
-    commit("setTokenCreatorAddress", tokenCreatorAddress);
-    commit("setTokenCreator", tokenCreator);
-    dispatch("fetchTokens");
-    dispatch("initListener");
+      let tokenCreator = new ethers.Contract(
+        tokenCreatorAddress,
+        TokenCreator.abi,
+        provider
+      );
+      commit("setTokenCreatorAbi", TokenCreator.abi);
+      commit("setTokenCreatorAddress", tokenCreatorAddress);
+      commit("setTokenCreator", tokenCreator);
+      dispatch("fetchTokens");
+      dispatch("initListener");
+    } catch (e) {
+      commit("setError", "Wrong network");
+    }
   },
   async fetchTokens({ commit, rootState, state }) {
     if (state.tokenCreator == null) return;
@@ -54,7 +63,7 @@ const actions = {
 
     commit("setTokens", tokens);
   },
-  async initListener() {
+  async initListener({ dispatch }) {
     if (state.listener != null) return;
     state.listener = state.tokenCreator.on(
       "CreatedSimpleToken",
@@ -66,7 +75,15 @@ const actions = {
           theme: "bubble",
           position: "top-center",
         });
+        dispatch("fetchTokens");
       }
+    );
+  },
+  async createSimpleToken(_, data) {
+    state.tokenCreator.createSimpleToken(
+      data.initialSupply,
+      data.name,
+      data.symbol
     );
   },
   async clear({ commit }) {
@@ -79,6 +96,9 @@ const actions = {
 };
 
 const mutations = {
+  setError(state, error) {
+    state.error = error;
+  },
   setTokens(state, _tokens) {
     state.tokens = _tokens;
   },

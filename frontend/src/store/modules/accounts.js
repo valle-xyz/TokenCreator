@@ -1,16 +1,16 @@
 import Web3Modal from "web3modal";
 import { ethers } from "ethers";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import BurnerConnectProvider from "@burner-wallet/burner-connect-provider";
 import Authereum from "authereum";
 
 const state = {
   activeAccount: null,
   activeBalance: 0,
-  chainId: null,
-  chainName: null,
-  providerEthers: null, // this is "provider" for Ethers.js
+  network: null,
+  provider: null,
+  signer: null,
   isConnected: false,
-  providerW3m: null, // this is "provider" from Web3Modal
   web3Modal: null,
 };
 
@@ -24,14 +24,14 @@ const getters = {
   getActiveBalanceEth(state) {
     return ethers.utils.formatEther(state.activeBalance);
   },
-  getChainId(state) {
-    return state.chainId;
+  getNetwork(state) {
+    return state.network;
   },
   getChainName(state) {
     return state.chainName;
   },
   getProviderEthers(state) {
-    return state.providerEthers;
+    return state.provider;
   },
   getWeb3Modal(state) {
     return state.web3Modal;
@@ -46,73 +46,62 @@ const actions = {
    * Loads Accounts data when wallet is connected and initializes TokenCreator
    */
   async initWeb3Modal({ commit, dispatch }) {
-    const providerOptions = {
-      // MetaMask is enabled by default
-      // Find other providers here: https://github.com/Web3Modal/web3modal/tree/master/docs/providers
-      burnerconnect: {
-        package: BurnerConnectProvider, // required
+    const web3Modal = new Web3Modal({
+      providerOptions: {
+        walletconnect: {
+          package: WalletConnectProvider, // required
+          options: {
+            rpc: {
+              44787: "https://alfajores-forno.celo-testnet.org",
+              42220: "https://forno.celo.org",
+            },
+          },
+        },
+        burnerconnect: {
+          package: BurnerConnectProvider, // required
+        },
+        authereum: {
+          package: Authereum, // required
+        },
       },
-      authereum: {
-        package: Authereum, // required
-      },
-    };
-
-    const w3mObject = new Web3Modal({
-      cacheProvider: true, // optional
-      providerOptions, // required
     });
+    commit("setWeb3Modal", web3Modal);
 
     // This will get deprecated soon. Setting it to false removes a warning from the console.
-    window.ethereum.autoRefreshOnNetworkChange = false;
-
-    // if the user is flagged as already connected, automatically connect back to Web3Modal
-    if (localStorage.getItem("isConnectedWallet") === "true") {
-      let providerW3m = await w3mObject.connect();
-      commit("setIsConnected", true);
-
-      commit("setActiveAccount", window.ethereum.selectedAddress);
-      commit("setChainData", window.ethereum.chainId);
-      commit("setEthersProvider", providerW3m);
-      dispatch("fetchActiveData");
-      dispatch("tokenCreator/init", {}, { root: true });
+    if (window.ethereum != null) {
+      window.ethereum.autoRefreshOnNetworkChange = false;
     }
 
-    commit("setWeb3ModalInstance", w3mObject);
+    if (localStorage.getItem("isConnectedWallet") === "true") {
+      dispatch("connectWeb3Modal");
+    }
   },
 
   async connectWeb3Modal({ commit, dispatch }) {
     let providerW3m = await state.web3Modal.connect();
-    commit("setIsConnected", true);
+    const provider = new ethers.providers.Web3Provider(providerW3m);
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    const network = await provider.getNetwork();
+    const balance = await provider.getBalance(address);
 
-    commit("setActiveAccount", window.ethereum.selectedAddress);
-    commit("setChainData", window.ethereum.chainId);
-    commit("setEthersProvider", providerW3m);
+    commit("setIsConnected", true);
+    commit("setActiveAccount", address);
+    commit("setSigner", signer);
+    commit("setProvider", provider);
+    commit("setNetwork", network);
+    commit("setActiveBalance", balance);
     dispatch("tokenCreator/init", {}, { root: true });
   },
+  async initListener() {},
 
   async disconnectWeb3Modal({ commit, dispatch }) {
+    await state.web3Modal.clearCachedProvider();
     commit("disconnectWallet");
     commit("setIsConnected", false);
     dispatch("tokenCreator/clear", {}, { root: true });
   },
 
-  async initListener({ commit, dispatch }) {
-    window.ethereum.on("accountsChanged", (accounts) => {
-      if (state.isConnected) {
-        commit("setActiveAccount", accounts[0]);
-        commit("setEthersProvider", state.providerW3m);
-        dispatch("tokenCreator/init", {}, { root: true });
-        dispatch("fetchActiveData");
-      }
-    });
-
-    window.ethereum.on("chainChanged", (chainId) => {
-      commit("setChainData", chainId);
-      commit("setEthersProvider", state.providerW3m);
-      dispatch("tokenCreator/init", {}, { root: true });
-      dispatch("fetchActiveData");
-    });
-  },
   /**
    * Fetches Tokens and Balances of an account.
    * Used when account or chain changed.
@@ -123,7 +112,7 @@ const actions = {
   },
 
   async fetchActiveBalance({ commit }) {
-    let balance = await state.providerEthers.getBalance(state.activeAccount);
+    let balance = await state.provider.getBalance(state.activeAccount);
     commit("setActiveBalance", balance);
   },
 };
@@ -132,12 +121,8 @@ const mutations = {
   async disconnectWallet(state) {
     state.activeAccount = null;
     state.activeBalance = 0;
-    state.providerEthers = null;
-    if (state.providerW3m.close && state.providerW3m !== null) {
-      await state.providerW3m.close();
-    }
-    state.providerW3m = null;
-    await state.web3Modal.clearCachedProvider();
+    state.provider = null;
+    state.signer = null;
   },
 
   setActiveAccount(state, selectedAddress) {
@@ -148,55 +133,23 @@ const mutations = {
     state.activeBalance = balance;
   },
 
-  setChainData(state, chainId) {
-    state.chainId = chainId;
-
-    switch (chainId) {
-      case "0x1":
-        state.chainName = "Mainnet";
-        break;
-      case "0x2a":
-        state.chainName = "Kovan";
-        break;
-      case "0x3":
-        state.chainName = "Ropsten";
-        break;
-      case "0x4":
-        state.chainName = "Rinkeby";
-        break;
-      case "0x5":
-        state.chainName = "Goerli";
-        break;
-      case "0xa4ec":
-        state.chainName = "Celo";
-        break;
-      case "0xaef3":
-        state.chainName = "Alfajores Testnet";
-        break;
-      case "0x7a69":
-        state.chainName = "Hardhat Localhost";
-        break;
-      case "0x539": // 1337 (often used on localhost)
-      case "0x1691": // 5777 (default in Ganache)
-      default:
-        state.chainName = chainId;
-        break;
-    }
-  },
-
-  async setEthersProvider(state, providerW3m) {
-    state.providerW3m = providerW3m;
-    state.providerEthers = new ethers.providers.Web3Provider(providerW3m);
+  async setProvider(state, provider) {
+    state.provider = provider;
   },
 
   setIsConnected(state, isConnected) {
     state.isConnected = isConnected;
-    // add to persistent storage so that the user can be logged back in when revisiting website
     localStorage.setItem("isConnectedWallet", isConnected);
   },
 
-  setWeb3ModalInstance(state, w3mObject) {
-    state.web3Modal = w3mObject;
+  setWeb3Modal(state, web3Modal) {
+    state.web3Modal = web3Modal;
+  },
+  setSigner(state, signer) {
+    state.signer = signer;
+  },
+  setNetwork(state, network) {
+    state.network = network;
   },
 };
 

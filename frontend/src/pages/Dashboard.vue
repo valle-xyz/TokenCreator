@@ -36,6 +36,9 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-alert v-if="getError" color="red" type="error"
+      >Please connect your wallet and choose Alfajores Testnet.</v-alert
+    >
   </div>
 </template>
 
@@ -50,6 +53,7 @@ export default {
     ...mapGetters("accounts", ["getActiveAccount", "getProviderEthers"]),
     ...mapGetters("tokenCreator", [
       "getTokens",
+      "getError",
       "getTokenCreatorAbi",
       "getTokenCreatorAddress",
     ]),
