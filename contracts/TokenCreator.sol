@@ -15,10 +15,8 @@ struct Token {
 /**
  * @title A Creator for Tokens
  * @dev Currently only creates SimpleToken
- * @dev Saves address into _child
  */
 contract TokenCreator is Ownable {
-    address _child;
     mapping(address => Token[]) public tokensOfOwner;
 
     event CreatedSimpleToken(
